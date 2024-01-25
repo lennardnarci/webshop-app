@@ -1,17 +1,43 @@
+require("dotenv").config({ path: "./config/config.env" });
+
 const express = require("express");
 const app = express();
+const path = require("path");
 const cors = require("cors");
-require("dotenv").config({ path: "./config.env" });
+const corsOptions = require("./config/corsOptions");
+const connectDB = require("./config/dbConn");
+const mongoose = require("mongoose");
 const port = process.env.PORT || 5000;
-app.use(cors());
+
+connectDB();
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
-app.use(require("./routes/product"));
-// get driver connection
-const dbo = require("./db/conn");
-app.listen(port, () => {
-  // perform a database connection when server starts
-  dbo.connectToServer(function (err) {
-    if (err) console.error(err);
+
+app.use(express.static("public"));
+
+app.use("/", require("./routes/root"));
+
+app.use("/users", require("./userRoutes"))
+
+app.all("*", (req, res) => {
+  res.status(404);
+  if (req.accepts("html")) {
+    res.sendFile(path.join(__dirname, "views", "404.html"));
+  } else if (req.accepts("json")) {
+    res.json({ message: "404 Not Found" });
+  } else {
+    res.type("txt").send("404 Not Found");
+  }
+});
+
+mongoose.connection.once("open", () => {
+  console.log("Connected to MongoDB");
+  app.listen(port, () => {
+    console.log(`Server running on port: ${port}`);
   });
-  console.log(`Server running on port: ${port}`);
+});
+mongoose.connection.on("error", (err) => {
+  console.log(err);
 });
