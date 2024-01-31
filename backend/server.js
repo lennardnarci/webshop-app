@@ -19,7 +19,11 @@ app.use(express.static("public"));
 
 app.use("/", require("./routes/root"));
 
-app.use("/users", require("./userRoutes"))
+app.use("/users", require("./routes/userRoutes"));
+
+app.use("/orders", require("./routes/orderRoutes"));
+
+app.use("/products", require("./routes/productRoutes"));
 
 app.all("*", (req, res) => {
   res.status(404);
