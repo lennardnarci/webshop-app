@@ -30,17 +30,17 @@ const ProductDetails = () => {
       const updatedCart = [...cartProducts];
       updatedCart[existingProductIndex].quantity++;
       setCartProducts(updatedCart);
-      console.log("uppdatera" + updatedCart);
+      //console.log("uppdatera" + updatedCart);
     } else {
       // annars lägg till den
       const newProduct = { ...product, quantity: 1 };
       setCartProducts([...cartProducts, newProduct]);
-      console.log("ny" + newProduct);
+      //console.log("ny" + newProduct);
     }
 
     // uppdatera totala summan
     setCartSum(cartSum + product.productPrice);
-    console.log(cartProducts);
+    //console.log(cartProducts);
   };
 
   if (!product) {
