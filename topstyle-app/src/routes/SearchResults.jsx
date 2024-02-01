@@ -1,59 +1,51 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { Link, useParams } from "react-router-dom";
 import { CartContext } from "../App";
 
-const ContentContainer = () => {
-  const [products, setProducts] = useState([]);
+const SearchResults = () => {
+  const { query } = useParams();
+  const [searchResults, setSearchResults] = useState([]);
   const { cartProducts, setCartProducts, cartSum, setCartSum } =
     useContext(CartContext);
 
   useEffect(() => {
-    fetch("http://localhost:5000/products")
+    fetch(`http://localhost:5000/search/${query}`)
       .then((response) => response.json())
       .then((data) => {
-        setProducts(data);
         console.log(data);
+        setSearchResults(data);
       })
       .catch((error) => {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching search results:", error);
       });
-  }, []);
+  }, [query]);
 
   const addToCart = (product) => {
-    // Kolla om produkten redan finns i Cart
     const existingProductIndex = cartProducts.findIndex(
       (item) => item._id === product._id
     );
 
     if (existingProductIndex !== -1) {
-      // Isåfall, ändra dens antal
       const updatedCart = [...cartProducts];
       updatedCart[existingProductIndex].quantity++;
       setCartProducts(updatedCart);
-      console.log("uppdatera" + updatedCart);
     } else {
-      // annars lägg till den
       const newProduct = { ...product, quantity: 1 };
       setCartProducts([...cartProducts, newProduct]);
-      console.log("ny" + newProduct);
     }
 
-    // uppdatera totala summan
     setCartSum(cartSum + product.productPrice);
-    console.log(cartProducts);
   };
 
   return (
-    <div className="content">
-      <h2>All Products</h2>
+    <div className="search-results">
+      <h2>Search Results for "{query}"</h2>
       <div className="product-list">
-        {products.map((product) => (
+        {searchResults.map((product) => (
           <div key={product._id} className="product">
             <h3>{product.productName}</h3>
-            {
-              //<p>{product.productDescription}</p>
-            }
-            <p>{product.productPrice} kr</p>
+            <p>Description: {product.productDescription}</p>
+            <p>Price: {product.productPrice} kr</p>
             <Link to={`/products/${product._id}`}>
               <button>View</button>
             </Link>
@@ -65,4 +57,4 @@ const ContentContainer = () => {
   );
 };
 
-export default ContentContainer;
+export default SearchResults;

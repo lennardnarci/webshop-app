@@ -1,6 +1,18 @@
 const Product = require("../models/Product");
 const asyncHandler = require("express-async-handler");
 
+const getProductById = asyncHandler(async (req, res) => {
+  const productId = req.params.id; 
+
+  const product = await Product.findById(productId).lean();
+
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
+
+  res.json(product);
+});
+
 const getAllProducts = asyncHandler(async (req, res) => {
   const products = await Product.find().lean();
   if (!products.length) {
@@ -12,12 +24,10 @@ const getAllProducts = asyncHandler(async (req, res) => {
 const createProduct = asyncHandler(async (req, res) => {
   const { productName, productDescription, productPrice } = req.body;
 
-  // Check if fields are empty.
   if (!productName || !productDescription || !productPrice) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  // Create and save a new product
   const product = await Product.create({
     productName,
     productDescription,
@@ -25,7 +35,6 @@ const createProduct = asyncHandler(async (req, res) => {
   });
 
   if (product) {
-    // Product created
     return res
       .status(201)
       .json({ message: `New product created: ${product.id}` });
@@ -78,6 +87,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 module.exports = {
   getAllProducts,
+  getProductById,
   createProduct,
   updateProduct,
   deleteProduct,

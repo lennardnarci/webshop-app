@@ -20,8 +20,6 @@ const getAllOrders = asyncHandler(async (req, res) => {
 
 const createOrder = asyncHandler(async (req, res) => {
   const { user, products, orderSum } = req.body;
-
-  // Check if fields are empty.
   if (
     !user ||
     !products ||
@@ -32,11 +30,9 @@ const createOrder = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  // Create and save a new order
   const order = await Order.create({ user, products, orderSum });
 
   if (order) {
-    // Order created
     return res
       .status(201)
       .json({ message: `New order created: ${order.orderID}` });

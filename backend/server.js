@@ -25,6 +25,10 @@ app.use("/orders", require("./routes/orderRoutes"));
 
 app.use("/products", require("./routes/productRoutes"));
 
+app.use("/login", require("./routes/loginRoutes"));
+
+app.use("/search", require("./routes/searchRoutes"));
+
 app.all("*", (req, res) => {
   res.status(404);
   if (req.accepts("html")) {
